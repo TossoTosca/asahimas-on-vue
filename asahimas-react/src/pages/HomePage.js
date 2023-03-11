@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Greeting from '../components/Greetings';
 
 
-export default function HomePage() {
+const HomePage = () => {
     return (
         <div className="container my-5" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <div style={{ flex: 1 }}>
                 <h1>Hello !</h1>
-                <h3>Selamat Pagi!</h3>
+                <Greeting />
                 <h5>Gabung dan temukan pilihan produk terbaik!</h5>
                 <div>
                     <p>pergi belanja sekarang ? lihat <Link to="/product">Produk!</Link> kami!</p>
@@ -22,3 +23,5 @@ export default function HomePage() {
         </div>
     )
 }
+
+export default HomePage;

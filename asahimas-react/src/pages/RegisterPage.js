@@ -11,7 +11,7 @@ export default function RegisterPage() {
         name: '',
         email: '',
         password: '',
-        role: ''
+        role: 'admin'
     });
 
     const handleInputChange = (event) => {
@@ -27,27 +27,24 @@ export default function RegisterPage() {
 
         try {
 
-            const response = await axios.post(`${apiUrl}/register`, {
+            const response = await axios.post(`${apiUrl}/users`, {
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,
                 role: formData.role
 
-            }, {
-                withCredentials: true
             });
+            if (response) {
 
-            console.log(response, formData)
-            // Simpan accessToken di sesi
-            sessionStorage.setItem('accessToken', response.data.accessToken);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ok, silahkan login',
+                })
 
-            Swal.fire({
-                icon: 'succes',
-                title: 'ok',
-            })
-
-            // Redirect ke halaman utama
-            window.location.href = '/login';
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            }
 
         } catch (error) {
             console.error(error);
@@ -92,8 +89,8 @@ export default function RegisterPage() {
                                 </div>
                                 <div className="mb-3">
                                     <label for="password" className="form-label">Select Role!</label>
-                                    <select className="form-control" id="role" name="role">
-                                        <option value="admin">Admin</option>
+                                    <select className="form-control" id="role" name="role" value={formData.role} onChange={handleInputChange}>
+                                        <option value="admin" selected>Admin</option>
                                         <option value="user">User</option>
                                     </select>
                                 </div>

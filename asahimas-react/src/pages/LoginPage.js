@@ -24,21 +24,24 @@ export default function LoginPage() {
 
         try {
 
-            const response = await axios.post('http://localhost:3004/login', {
+            const response = await axios.post(`${apiUrl}/login`, {
                 email: formData.email,
                 password: formData.password,
             });
 
             // Simpan accessToken di sesi
-            sessionStorage.setItem('accessToken', response.data.accessToken);
+            if (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ok',
+                })
+                localStorage.setItem('accessToken', response.data.accessToken);
 
-            Swal.fire({
-                icon: 'succes',
-                title: 'ok',
-            })
 
-            // Redirect ke halaman utama
-            window.location.href = '/';
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+            }
 
         } catch (error) {
             console.error(error);
