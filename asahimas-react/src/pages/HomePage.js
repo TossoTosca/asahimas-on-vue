@@ -5,13 +5,13 @@ import Greeting from '../components/Greetings';
 
 const HomePage = () => {
     return (
-        <div className="container my-5" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <div className="container my-5" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', height: "100vh" }}>
             <div style={{ flex: 1 }}>
                 <h1>Hello !</h1>
                 <Greeting />
                 <h5>Gabung dan temukan pilihan produk terbaik!</h5>
                 <div>
-                    <p>pergi belanja sekarang ? lihat <Link to="/product">Produk!</Link> kami!</p>
+                    <p>pergi belanja sekarang ? <Link to="/login">Login</Link> untuk melihat produk kami!</p>
                 </div>
             </div>
             <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

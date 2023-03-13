@@ -1,32 +1,29 @@
 import React from 'react';
 import CardComponent from '../components/CardComponent';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Scrollbar, Mousewheel } from "swiper";
-import "swiper/css"
+import { FreeMode } from "swiper";
+
 import "swiper/css/free-mode";
-
-import 'bootstrap/dist/css/bootstrap.min.css'
-
+import "swiper/css/scrollbar";
+import "swiper/css/mousewheel";
 import "../App.css";
 
-export default function ProductPage() {
+export default function MyProductPage() {
+    const accessToken = localStorage.getItem('accessToken');
 
-    const endpoint = 'http://localhost:3004/products';
+    const endpoint = `http://localhost:3004/myProduct?hereForYou=${accessToken}`
     return (
-        <div className='container py-4 px-4 justify-content-center' style={{ height: '100%' }}>
+        <div className='container py-4 px-4 justify-content-center' style={{ height: '100vh' }}>
             <div className='row'>
-                <h1>List Product</h1>
+                <h1>My Product</h1>
             </div>
-
             <div className='row'>
                 <Swiper
                     freeMode={true}
                     scrollbar={true}
                     mousewheel={true}
-                    modules={[FreeMode, Scrollbar, Mousewheel]}
+                    modules={[FreeMode]}
                     className="mySwiper"
-                    slidesPerView={5}
-                    spaceBetween={30}
                     breakpoints={{
                         0: {
                             slidesPerView: 1,
@@ -50,9 +47,11 @@ export default function ProductPage() {
                         }
                     }}
                 >
+
                     <SwiperSlide>
                         <CardComponent endpoint={endpoint} />
                     </SwiperSlide>
+
                 </Swiper>
             </div>
         </div>

@@ -1,125 +1,108 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import Swal from "sweetalert2";
+import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
-function Card() {
+
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { Card, Button } from 'react-bootstrap'
+
+function IdrFormater({ amount }) {
+    const formatter = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    });
+    return formatter.format(amount);
+}
+
+const CardComponent = ({ endpoint }) => {
     const [products, setProducts] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        axios
-            .get("http://localhost:3004/products")
-            .then((response) => setProducts(response.data))
-            .catch((error) => console.log(error));
-    }, []);
+        const fetchData = async () => {
+            const response = await fetch(endpoint);
+            const data = await response.json();
+            setProducts(data);
+        };
+        fetchData();
+    }, [endpoint]);
 
-    const handleCardClick = (product) => {
-        setSelectedProduct(product);
+    const handleBuyNowClick = (product) => {
         Swal.fire({
             title: product.name,
-            icon: 'info',
             imageUrl: product.imgUrl,
-            imageWidth: 400,
-            imageHeight: 200,
+            text: `Beli seharga ${IdrFormater({ amount: product.price })}`,
+            icon: 'info',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Next Proceed?'
+            confirmButtonText: 'Yes, add this to my product!'
         }).then((result) => {
             if (result.isConfirmed) {
-                const inputOptions = new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve({
-                            'Jual': `Jual Seharga : Rp.${product.priceSell}`,
-                            'Beli': `Beli Seharga : Rp.${product.priceSell}`
-                        })
-                    }, 1000)
-                })
-
                 Swal.fire({
-                    title: 'Pilih Opsi!',
-                    input: 'radio',
-                    inputOptions: inputOptions,
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return 'You need to choose something!'
-                        } else {
-                            console.log(value)
+                    title: 'Mau Beli berapa banyak ?',
+                    icon: 'question',
+                    input: 'range',
+                    inputLabel: 'ini akan di tambahkan ke banyak nya stok di produk mu!',
+                    inputAttributes: {
+                        min: 1,
+                        max: product.stock,
+                        step: 1
+                    },
+                    inputValue: 2
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const quantity = result.value;
+
+                        Swal.fire(
+                            'OK!',
+                            'produk ini milikmu sekarang!',
+                            'success'
+                        );
+
+                        // ambil accessToken dari localStorage
+                        const accessToken = localStorage.getItem('accessToken');
+
+                        // cek halaman saat ini, dan hit endpoint yang sesuai dengan axios
+                        if (window.location.pathname === '/history') {
+                            const historyId = product.id;
+                            const productName = product.name;
+                            axios.get(`http://localhost:3004/sellProduct?accessToken=${accessToken}&historyId=${historyId}&quantity=${quantity}&productName=${productName}`)
+                                .then(response => console.log(response.data))
+                                .catch(error => console.error(error));
+                        } else if (window.location.pathname === '/product') {
+                            axios.get(`http://localhost:3004/buyProduct?accessToken=${accessToken}&productId=${product.id}&quantity=${quantity}`)
+                                .then(response => console.log(response.data))
+                                .catch(error => console.error(error));
                         }
                     }
                 })
             }
         })
-    };
+    }
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
 
     return (
-        <div className="container">
-            <div className="row">
-                {products.map((product) => (
-                    <div key={product.id} className="col-sm-4">
-                        <div className="card">
-                            <img
-                                src={product.imgUrl}
-                                className="card-img-top"
-                                alt={product.name}
-                            />
-                            <div className="card-body">
-                                <h5 className="card-title">{product.name}</h5>
-                                <p className="card-text">stock : {product.stock}</p>
-                                <p className="card-text">Harga: ${product.price}</p>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => handleCardClick(product)}
-                                >
-                                    View Details
-                                </button>
-                            </div>
-                        </div>
+        <Card className='p-0 overflow-hidden h-100 shadow'>
+            {products.map((product) => (
+                <div key={product.id}>
+                    <div className='overflow-hidden rounded p-0 bg-light'>
+                        <Card.Img className='variant-top' src={product.imgUrl} alt={product.name} />
                     </div>
-                ))}
-            </div>
-            {showModal && (
-                <CardModal product={selectedProduct} onClose={handleCloseModal} />
-            )}
-        </div>
-    );
-}
-
-function CardModal({ product, onClose }) {
-    return (
-        <div className="modal" tabIndex="-1" role="dialog">
-            <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">{product.name}</h5>
-                        <button
-                            type="button"
-                            className="close"
-                            onClick={onClose}
-                            aria-label="Close"
-                        >
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div className="modal-body">
-                        <img
-                            src={product.imgUrl}
-                            className="img-fluid"
-                            alt={product.name}
-                        />
-                        <p>Harga Beli : ${product.priceSell}</p>
-                        <p>Harga Jual : ${product.priceBuy}</p>
-
-                    </div>
+                    <Card.Body className='text-center'>
+                        <Card.Title className='display-6'>{product.name}</Card.Title>
+                        <hr />
+                        <Card.Title>{IdrFormater({ amount: product.price })}</Card.Title>
+                        <Card.Title>Stock: {product.stock}</Card.Title>
+                        <hr />
+                        <Button className='w-100 rounded-0' variant='success' onClick={() => handleBuyNowClick(product)}>
+                            Buy now
+                        </Button>
+                    </Card.Body>
                 </div>
-            </div>
-        </div>
+            ))}
+        </Card>
     );
-}
+};
 
-export default Card;
+export default CardComponent;

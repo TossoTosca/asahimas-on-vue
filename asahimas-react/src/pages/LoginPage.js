@@ -29,7 +29,6 @@ export default function LoginPage() {
                 password: formData.password,
             });
 
-            // Simpan accessToken di sesi
             if (response) {
                 Swal.fire({
                     icon: 'success',

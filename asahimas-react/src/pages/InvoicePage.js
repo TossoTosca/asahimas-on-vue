@@ -2,7 +2,7 @@ import React from 'react';
 
 function InvoicePage() {
     return (
-        <div className="container my-4">
+        <div className="container my-4" style={{ height: '100vh' }}>
             <div className="card">
                 {/* Header section */}
                 <div className="row header px-3">

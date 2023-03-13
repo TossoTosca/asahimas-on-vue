@@ -1,11 +1,11 @@
 import React from 'react';
-// import { Dropdown } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 // import { Link } from 'react-router-dom';
 
 export default function AppHeader() {
     return (
         <header className="App-header">
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <Navbar className="navbar navbar-expand-lg navbar-dark bg-dark" sticky='top'>
                 <div className="container-fluid">
                     <a className="navbar-brand">Asahimas</a>
                     {/* <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -37,7 +37,7 @@ export default function AppHeader() {
                         </Dropdown.Menu>
                     </Dropdown> */}
                 </div>
-            </nav>
+            </Navbar>
         </header >
     )
 }
