@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardComponent from '../components/CardComponent';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode } from "swiper";
+import { FreeMode, Scrollbar } from "swiper";
 
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
@@ -12,8 +12,17 @@ export default function MyProductPage() {
     const accessToken = localStorage.getItem('accessToken');
 
     const endpoint = `http://localhost:3004/myProduct?hereForYou=${accessToken}`
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => setProducts(data))
+            .catch(error => console.log(error))
+    }, []);
+
     return (
-        <div className='container py-4 px-4 justify-content-center' style={{ height: '100vh' }}>
+        <div className='container py-4 px-4 justify-content-center' style={{ height: '93vh', width: '160vh' }}>
             <div className='row'>
                 <h1>My Product</h1>
             </div>
@@ -22,8 +31,10 @@ export default function MyProductPage() {
                     freeMode={true}
                     scrollbar={true}
                     mousewheel={true}
-                    modules={[FreeMode]}
+                    modules={[FreeMode, Scrollbar]}
                     className="mySwiper"
+                    slidesPerView={5}
+                    spaceBetween={30}
                     breakpoints={{
                         0: {
                             slidesPerView: 1,
@@ -48,10 +59,11 @@ export default function MyProductPage() {
                     }}
                 >
 
-                    <SwiperSlide>
-                        <CardComponent endpoint={endpoint} />
-                    </SwiperSlide>
-
+                    {products.map((product, index) => (
+                        <SwiperSlide key={index}>
+                            <CardComponent product={product} endpoint={endpoint} />
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
             </div>
         </div>

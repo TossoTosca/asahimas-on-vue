@@ -13,6 +13,7 @@ import AccountPage from './pages/AccountPage';
 import SideBar from './components/SideBar';
 import DashBoardPage from './pages/DashBoardPage';
 import MyProductPage from './pages/MyProductPage';
+import AddProductPage from './pages/AddProduct';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
               <Route path='/history' element={<MyProductPage />} />
               <Route path='/invoice' element={<InvoicePage />} />
               <Route path='/account' element={<AccountPage />} />
+              <Route path='/product/add' element={<AddProductPage />} />
             </Routes>
           </div>
         ) : (

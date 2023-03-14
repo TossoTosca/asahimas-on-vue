@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardComponent from '../components/CardComponent';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Scrollbar, Mousewheel } from "swiper";
+import { FreeMode } from "swiper";
+
 import "swiper/css"
 import "swiper/css/free-mode";
 
@@ -12,8 +13,17 @@ import "../App.css";
 export default function ProductPage() {
 
     const endpoint = 'http://localhost:3004/products';
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => setProducts(data))
+            .catch(error => console.log(error))
+    }, []);
+
     return (
-        <div className='container py-4 px-4 justify-content-center' style={{ height: '100%' }}>
+        <div className='container py-4 px-4 justify-content-center' style={{ height: '93vh', width: '160vh' }}>
             <div className='row'>
                 <h1>List Product</h1>
             </div>
@@ -23,7 +33,7 @@ export default function ProductPage() {
                     freeMode={true}
                     scrollbar={true}
                     mousewheel={true}
-                    modules={[FreeMode, Scrollbar, Mousewheel]}
+                    modules={[FreeMode]}
                     className="mySwiper"
                     slidesPerView={5}
                     spaceBetween={30}
@@ -50,9 +60,11 @@ export default function ProductPage() {
                         }
                     }}
                 >
-                    <SwiperSlide>
-                        <CardComponent endpoint={endpoint} />
-                    </SwiperSlide>
+                    {products.map((product, index) => (
+                        <SwiperSlide key={index}>
+                            <CardComponent product={product} endpoint={endpoint} />
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
             </div>
         </div>

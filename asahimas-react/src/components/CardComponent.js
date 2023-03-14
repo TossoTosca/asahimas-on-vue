@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Card, Button } from 'react-bootstrap'
@@ -15,17 +14,7 @@ function IdrFormater({ amount }) {
     return formatter.format(amount);
 }
 
-const CardComponent = ({ endpoint }) => {
-    const [products, setProducts] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await fetch(endpoint);
-            const data = await response.json();
-            setProducts(data);
-        };
-        fetchData();
-    }, [endpoint]);
+const CardComponent = ({ endpoint, product }) => {
 
     const handleBuyNowClick = (product) => {
         Swal.fire({
@@ -36,20 +25,20 @@ const CardComponent = ({ endpoint }) => {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, add this to my product!'
+            confirmButtonText: 'Ya!'
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Mau Beli berapa banyak ?',
                     icon: 'question',
                     input: 'range',
-                    inputLabel: 'ini akan di tambahkan ke banyak nya stok di produk mu!',
+                    inputLabel: 'ini akan di tambahkan ke banyak nya stok di produk !',
                     inputAttributes: {
                         min: 1,
                         max: product.stock,
                         step: 1
                     },
-                    inputValue: 2
+                    inputValue: 1
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const quantity = result.value;
@@ -68,11 +57,19 @@ const CardComponent = ({ endpoint }) => {
                             const historyId = product.id;
                             const productName = product.name;
                             axios.get(`http://localhost:3004/sellProduct?accessToken=${accessToken}&historyId=${historyId}&quantity=${quantity}&productName=${productName}`)
-                                .then(response => console.log(response.data))
+                                .then((response) => {
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 200);
+                                })
                                 .catch(error => console.error(error));
                         } else if (window.location.pathname === '/product') {
                             axios.get(`http://localhost:3004/buyProduct?accessToken=${accessToken}&productId=${product.id}&quantity=${quantity}`)
-                                .then(response => console.log(response.data))
+                                .then((response) => {
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 200);
+                                })
                                 .catch(error => console.error(error));
                         }
                     }
@@ -84,23 +81,25 @@ const CardComponent = ({ endpoint }) => {
 
     return (
         <Card className='p-0 overflow-hidden h-100 shadow'>
-            {products.map((product) => (
-                <div key={product.id}>
-                    <div className='overflow-hidden rounded p-0 bg-light'>
-                        <Card.Img className='variant-top' src={product.imgUrl} alt={product.name} />
-                    </div>
-                    <Card.Body className='text-center'>
-                        <Card.Title className='display-6'>{product.name}</Card.Title>
-                        <hr />
-                        <Card.Title>{IdrFormater({ amount: product.price })}</Card.Title>
-                        <Card.Title>Stock: {product.stock}</Card.Title>
-                        <hr />
-                        <Button className='w-100 rounded-0' variant='success' onClick={() => handleBuyNowClick(product)}>
-                            Buy now
-                        </Button>
-                    </Card.Body>
+            <div className='overflow-hidden rounded p-0 bg-light'>
+                <Card.Img className='variant-top' src={product.imgUrl} alt={product.name} />
+            </div>
+            <Card.Body className='text-center'>
+                <Card.Title className='display-8' style={{ height: '60px' }}>{product.name}</Card.Title>
+                <hr />
+                <div className='h-1' >
+
+                    <Card.Title>{IdrFormater({ amount: product.price })}</Card.Title>
+                    <Card.Title>Stock: {product.stock}</Card.Title>
                 </div>
-            ))}
+                <hr />
+                <Button
+                    className='w-100 rounded-0'
+                    variant={window.location.pathname === '/history' ? 'danger' : 'success'}
+                    onClick={() => handleBuyNowClick(product)}>
+                    {window.location.pathname === '/history' ? 'Sell now' : 'Buy now'}
+                </Button>
+            </Card.Body>
         </Card>
     );
 };

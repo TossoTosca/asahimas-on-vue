@@ -1,16 +1,60 @@
-// import { useContext } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { AuthContext } from '../context/AuthContext';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 
 function AccountPage() {
-    // const { user, logout, deleteUser } = useContext(AuthContext);
-    // const navigate = useNavigate();
+    const [userData, setUserData] = useState({});
+    const accessToken = localStorage.getItem('accessToken');
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3004/users?myAccount=${accessToken}`);
+                setUserData(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [accessToken]);
 
-    const handleDeleteAccount = () => {
-        // deleteUser();
-        // navigate('/login');
+    console.log(userData)
+
+    const handleDeleteAccount = async () => {
+        try {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+                await axios.delete(`http://localhost:3004/users?myAccount=${accessToken}`);
+                await Swal.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success'
+                );
+                window.location.href = '/dashboard';
+                localStorage.removeItem('accessToken');
+
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to delete account.',
+                icon: 'error',
+                button: 'OK'
+            });
+        }
     };
+
 
     return (
         <div className="container my-5" style={{ height: '80vh' }}>
@@ -19,18 +63,13 @@ function AccountPage() {
                 <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
             </svg>
             <h1 style={{ textAlign: 'center' }}>Account Information</h1>
-            <p style={{ textAlign: 'center' }}>Name: udin</p>
-            <p style={{ textAlign: 'center' }}>Email: udin@mail.com</p>
-            <p style={{ textAlign: 'center' }}>Role: Admin</p>
+            <p style={{ textAlign: 'center' }}>Name: {userData.name}</p>
+            <p style={{ textAlign: 'center' }}>Email: {userData.email}</p>
+            <p style={{ textAlign: 'center' }}>Role: {userData.role}</p>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
 
-                <button style={{
-                    borderRadius: '5px',
-                    backgroundColor: 'red',
-                    color: 'white',
-                    border: 'none',
-                    padding: '10px 20px'
-                }}>Delete Account</button>
+                <Button variant="danger" onClick={handleDeleteAccount}>Delete Account</Button>
+
 
             </div>
         </div>

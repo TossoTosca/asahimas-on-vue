@@ -1,8 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import RealTimeDate from '../components/RealTimeDate';
+import axios from 'axios';
+import IdrFormater from '../components/IdrFormater';
 
 function InvoicePage() {
+    function IdrFormater({ amount }) {
+        const formatter = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        });
+        return formatter.format(amount);
+    }
+
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        const endpoint = `http://localhost:3004/myProduct?hereForYou=${accessToken}`;
+
+        async function fetchData() {
+            try {
+                const response = await axios.get(endpoint);
+                setData(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    const getUser = data.map((el, i) => {
+        return el.User.name
+    })[0];
+
+    let totalPrice = 0;
+    let totalTax = 0.05;
+
+    data.forEach(item => {
+        totalPrice += item.price * item.stock;
+    });
+
+    let subtotal = totalPrice.toFixed(2);
+    let tax = (totalPrice * totalTax).toFixed(2);
+    let total = (parseFloat(subtotal) + parseFloat(tax)).toFixed(2);
+
+
     return (
-        <div className="container my-4" style={{ height: '100vh' }}>
+        <div className="container my-4" style={{ minHeight: '87vh', maxHeight: 'auto' }}>
             <div className="card">
                 {/* Header section */}
                 <div className="row header px-3">
@@ -10,7 +56,7 @@ function InvoicePage() {
                         <h1>Buy Invoice</h1>
                     </div>
                     <div className="col-sm-6 text-right">
-                        <h4>Date: March 10, 2023</h4>
+                        <RealTimeDate />
                         <h4>Invoice #: 123456</h4>
                     </div>
                 </div>
@@ -21,17 +67,17 @@ function InvoicePage() {
                 <div className="row px-3">
                     <div className="col-sm-6">
                         <h4>From:</h4>
-                        <p>Your Company Name</p>
-                        <p>Your Company Address</p>
-                        <p>Your City, State ZIP</p>
-                        <p>Your Country</p>
+                        <p>This Web Sites</p>
+                        <p>Sudirman HK</p>
+                        <p>Jakarta, 12837</p>
+                        <p>INDONESIA</p>
                     </div>
                     <div className="col-sm-6 text-right">
                         <h4>To:</h4>
-                        <p>Customer Name</p>
-                        <p>Customer Address</p>
-                        <p>Customer City, State ZIP</p>
-                        <p>Customer Country</p>
+                        <p>Mr.{getUser}</p>
+                        <p>Jl.Cempaka no.12.</p>
+                        <p>Customer Jakarta, 2129</p>
+                        <p>INDONESIA</p>
                     </div>
                 </div>
 
@@ -40,8 +86,8 @@ function InvoicePage() {
                 {/* Product table section */}
                 <div className="row">
                     <div className="col-sm-12">
-                        <table className="table table-striped">
-                            <thead>
+                        <table className="table table-striped" >
+                            <thead style={{ textAlign: 'center' }}>
                                 <tr>
                                     <th>Product</th>
                                     <th>Description</th>
@@ -50,30 +96,18 @@ function InvoicePage() {
                                     <th>Total</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Product 1</td>
-                                    <td>Description of product 1.</td>
-                                    <td>2</td>
-                                    <td>$50.00</td>
-                                    <td>$100.00</td>
+                            {data.map((item, index) => (
+                                <tr key={index} style={{ textAlign: 'center' }}>
+                                    <td>{item.name}</td>
+                                    <td>Product Pada User</td>
+                                    <td>{item.stock}</td>
+                                    <td>{IdrFormater({ amount: item.priceSell })}</td>
+                                    <td>{IdrFormater({ amount: item.stock * item.price })}</td>
+                                    <hr />
                                 </tr>
-                                <tr>
-                                    <td>Product 2</td>
-                                    <td>Description of product 2.</td>
-                                    <td>1</td>
-                                    <td>$75.00</td>
-                                    <td>$75.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Product 3</td>
-                                    <td>Description of product 3.</td>
-                                    <td>3</td>
-                                    <td>$25.00</td>
-                                    <td>$75.00</td>
-                                </tr>
-                            </tbody>
+                            ))}
                         </table>
+                        <hr />
                     </div>
                 </div>
 
@@ -81,12 +115,17 @@ function InvoicePage() {
                 <div className="row px-3">
                     <div className="col-sm-6">
                         <h4>Notes:</h4>
-                        <p>Additional notes about the invoice.</p>
+                        <p>INVOICE DUMMY</p>
                     </div>
-                    <div className="col-sm-6 text-right">
-                        <p><strong>Subtotal:</strong> $250.00</p>
-                        <p><strong>Tax:</strong> $12.50</p>
-                        <p><strong>Total:</strong> $262.50</p>
+                    <div className="col-sm-3 text-right">
+                        <p><strong>Subtotal:</strong>    </p>
+                        <p><strong>Tax:</strong>    </p>
+                        <p><strong>Total:</strong>  </p>
+                    </div>
+                    <div className="col-sm-3 text-right">
+                        <p><strong>    {IdrFormater({ amount: subtotal })}</strong></p>
+                        <p><strong>    {IdrFormater({ amount: tax })}</strong></p>
+                        <p><strong>  {IdrFormater({ amount: total })}</strong></p>
                     </div>
                 </div>
             </div>
