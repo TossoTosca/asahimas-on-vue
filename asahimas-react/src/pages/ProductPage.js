@@ -60,11 +60,13 @@ export default function ProductPage() {
                         }
                     }}
                 >
-                    {products.map((product, index) => (
-                        <SwiperSlide key={index}>
-                            <CardComponent product={product} endpoint={endpoint} />
-                        </SwiperSlide>
-                    ))}
+                    {products.length ?
+                        products.map((product, index) => (
+                            <SwiperSlide key={index}>
+                                <CardComponent product={product} endpoint={endpoint} />
+                            </SwiperSlide>
+                        )) : <h1>Tidak Ada Produk</h1>
+                    }
                 </Swiper>
             </div>
         </div>

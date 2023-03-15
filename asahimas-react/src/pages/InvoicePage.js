@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import RealTimeDate from '../components/RealTimeDate';
 import axios from 'axios';
-import IdrFormater from '../components/IdrFormater';
+import Swal from 'sweetalert2';
+import { Button } from 'react-bootstrap';
 
 function InvoicePage() {
     function IdrFormater({ amount }) {
@@ -31,6 +32,53 @@ function InvoicePage() {
         fetchData();
     }, []);
 
+
+
+
+
+    function proceedTransaction() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, proceed!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const accessToken = localStorage.getItem('accessToken');
+                axios.get(`http://localhost:3004/payment?accessToken=${accessToken}`)
+                    .then((response) => {
+                        // Do something with the invoice data
+                        let getMoney = Number(response.data.money)
+                        const formatter = new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
+                        });
+                        const displayMoney = formatter.format(getMoney)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Transaction completed.',
+                            text: `${displayMoney} added to your account !`// why this output is Nan?
+                        });
+                        //refresh window !
+                    })
+                    .catch((error) => {
+                        // Handle error
+                        Swal.fire(
+                            'error',
+                            'Failed to complete transaction.',
+                            'error'
+                        );
+                    });
+            }
+        });
+    }
+
+
+
     const getUser = data.map((el, i) => {
         return el.User.name
     })[0];
@@ -57,7 +105,7 @@ function InvoicePage() {
                     </div>
                     <div className="col-sm-6 text-right">
                         <RealTimeDate />
-                        <h4>Invoice #: 123456</h4>
+                        <h4>Invoice #: {Date.now() + data.length}</h4>
                     </div>
                 </div>
 
@@ -114,15 +162,19 @@ function InvoicePage() {
                 {/* Notes and total section */}
                 <div className="row px-3">
                     <div className="col-sm-6">
-                        <h4>Notes:</h4>
-                        <p>INVOICE DUMMY</p>
+                        <h4>Click This to proceed buy!:</h4>
+                        <div className='p-2'>
+                            <Button className='btn-success rounded' style={{ height: '50px', width: '240px', position: 'fixed', textAlign: 'center' }} onClick={proceedTransaction}>
+                                <strong> Proceed Transaction! </strong>
+                            </Button>
+                        </div>
                     </div>
                     <div className="col-sm-3 text-right">
                         <p><strong>Subtotal:</strong>    </p>
                         <p><strong>Tax:</strong>    </p>
                         <p><strong>Total:</strong>  </p>
                     </div>
-                    <div className="col-sm-3 text-right">
+                    <div className="col-sm-2 text-right">
                         <p><strong>    {IdrFormater({ amount: subtotal })}</strong></p>
                         <p><strong>    {IdrFormater({ amount: tax })}</strong></p>
                         <p><strong>  {IdrFormater({ amount: total })}</strong></p>

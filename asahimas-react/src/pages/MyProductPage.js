@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import CardComponent from '../components/CardComponent';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Scrollbar } from "swiper";
+import Swal from 'sweetalert2';
 
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 import "swiper/css/mousewheel";
 import "../App.css";
+import ErrorMessage from '../components/ErrorMessage';
 
 export default function MyProductPage() {
     const accessToken = localStorage.getItem('accessToken');
@@ -59,11 +61,13 @@ export default function MyProductPage() {
                     }}
                 >
 
-                    {products.map((product, index) => (
-                        <SwiperSlide key={index}>
-                            <CardComponent product={product} endpoint={endpoint} />
-                        </SwiperSlide>
-                    ))}
+                    {products.length ?
+                        products.map((product, index) => (
+                            <SwiperSlide key={index}>
+                                <CardComponent product={product} endpoint={endpoint} />
+                            </SwiperSlide>
+                        )) : <h1>Tidak Ada Produk</h1>
+                    }
                 </Swiper>
             </div>
         </div>

@@ -20,7 +20,7 @@ const CardComponent = ({ endpoint, product }) => {
         Swal.fire({
             title: product.name,
             imageUrl: product.imgUrl,
-            text: `${window.location.pathname === '/product' ? 'Beli' : 'Jual'} seharga ${IdrFormater({ amount: product.price })}`
+            text: `${window.location.pathname === '/product' ? 'Beli' : 'Jual'} seharga ${window.location.pathname === '/product' ? IdrFormater({ amount: product.price }) : IdrFormater({ amount: product.priceSell })}`
             ,
             icon: 'info',
             showCancelButton: true,
@@ -30,10 +30,10 @@ const CardComponent = ({ endpoint, product }) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
-                    title: 'Mau Beli berapa banyak ?',
+                    title: `Mau ${window.location.pathname === '/product' ? 'Beli' : 'Jual'} berapa banyak ?`,
                     icon: 'question',
                     input: 'range',
-                    inputLabel: 'ini akan di tambahkan ke banyak nya stok di produk !',
+                    inputLabel: `${window.location.pathname === '/product' ? 'masukkan ini ke produk mu ?' : 'taruh di market place?'}`,
                     inputAttributes: {
                         min: 1,
                         max: product.stock,
@@ -46,7 +46,7 @@ const CardComponent = ({ endpoint, product }) => {
 
                         Swal.fire(
                             'OK!',
-                            'produk ini milikmu sekarang!',
+                            `${window.location.pathname === '/product' ? 'produk ini milikmu sekarang!' : `produk ini ada di market place sekarang`}`,
                             'success'
                         );
 
@@ -55,13 +55,13 @@ const CardComponent = ({ endpoint, product }) => {
 
                         // cek halaman saat ini, dan hit endpoint yang sesuai dengan axios
                         if (window.location.pathname === '/history') {
-                            const historyId = product.id;
+                            const myProductId = product.id;
                             const productName = product.name;
-                            axios.get(`http://localhost:3004/sellProduct?accessToken=${accessToken}&historyId=${historyId}&quantity=${quantity}&productName=${productName}`)
+                            axios.get(`http://localhost:3004/sellProduct?accessToken=${accessToken}&myProductId=${myProductId}&quantity=${quantity}&productName=${productName}`)
                                 .then((response) => {
                                     setTimeout(() => {
                                         window.location.reload();
-                                    }, 200);
+                                    }, 1000);
                                 })
                                 .catch(error => console.error(error));
                         } else if (window.location.pathname === '/product') {
@@ -69,7 +69,7 @@ const CardComponent = ({ endpoint, product }) => {
                                 .then((response) => {
                                     setTimeout(() => {
                                         window.location.reload();
-                                    }, 200);
+                                    }, 1000);
                                 })
                                 .catch(error => console.error(error));
                         }
@@ -83,7 +83,7 @@ const CardComponent = ({ endpoint, product }) => {
     return (
         <Card className='p-0 overflow-hidden h-100 shadow'>
             <div className='overflow-hidden rounded p-0 bg-light'>
-                <Card.Img className='variant-top' src={product.imgUrl} alt={product.name} />
+                <Card.Img className='variant-top' src={product.imgUrl} alt={product.name} style={{ maxHeight: "167px", maxWidth: "210px", minWidth: "167px", minHeight: "210px" }} />
             </div>
             <Card.Body className='text-center'>
                 <Card.Title className='display-8' style={{ height: '60px' }}>{product.name}</Card.Title>
@@ -91,14 +91,15 @@ const CardComponent = ({ endpoint, product }) => {
                 <div className='h-1' >
 
                     <Card.Title>{IdrFormater({ amount: product.price })}</Card.Title>
-                    <Card.Title>Stock: {product.stock}</Card.Title>
+                    <Card.Title>Stock: {product.stock !== 0 ? product.stock : 'Sold Out'}</Card.Title>
+
                 </div>
                 <hr />
                 <Button
                     className='w-100 rounded-0'
                     variant={window.location.pathname === '/history' ? 'danger' : 'success'}
                     onClick={() => handleBuyNowClick(product)}>
-                    {window.location.pathname === '/history' ? 'Sell now' : 'Buy now'}
+                    {window.location.pathname === '/history' ? 'Return Product' : 'Buy now'}
                 </Button>
             </Card.Body>
         </Card>

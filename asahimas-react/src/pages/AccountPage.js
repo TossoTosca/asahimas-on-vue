@@ -7,6 +7,13 @@ function AccountPage() {
     const [userData, setUserData] = useState({});
     const accessToken = localStorage.getItem('accessToken');
 
+    const formatter = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    });
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -40,8 +47,8 @@ function AccountPage() {
                     'Your file has been deleted.',
                     'success'
                 );
-                window.location.href = '/dashboard';
                 localStorage.removeItem('accessToken');
+                window.location.href = '/login';
 
             }
         } catch (error) {
@@ -66,6 +73,8 @@ function AccountPage() {
             <p style={{ textAlign: 'center' }}>Name: {userData.name}</p>
             <p style={{ textAlign: 'center' }}>Email: {userData.email}</p>
             <p style={{ textAlign: 'center' }}>Role: {userData.role}</p>
+            <p style={{ textAlign: 'center' }}>Transaction made : {formatter.format(userData.money)}</p>
+
             <div style={{ display: 'flex', justifyContent: 'center' }}>
 
                 <Button variant="danger" onClick={handleDeleteAccount}>Delete Account</Button>
