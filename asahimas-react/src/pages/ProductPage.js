@@ -9,10 +9,11 @@ import "swiper/css/free-mode";
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import "../App.css";
+import { apiUrl } from '../components/ApiUrl';
 
 export default function ProductPage() {
 
-    const endpoint = 'http://localhost:3004/products';
+    const endpoint = `${apiUrl}/products`;
     const [products, setProducts] = useState([]);
 
     useEffect(() => {

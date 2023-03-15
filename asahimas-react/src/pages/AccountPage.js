@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
+import { apiUrl } from '../components/ApiUrl';
 
 function AccountPage() {
     const [userData, setUserData] = useState({});
@@ -17,7 +18,7 @@ function AccountPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:3004/users?myAccount=${accessToken}`);
+                const response = await axios.get(`${apiUrl}/users?myAccount=${accessToken}`);
                 setUserData(response.data);
             } catch (error) {
                 console.log(error);
@@ -41,7 +42,7 @@ function AccountPage() {
             });
 
             if (result.isConfirmed) {
-                await axios.delete(`http://localhost:3004/users?myAccount=${accessToken}`);
+                await axios.delete(`${apiUrl}/users?myAccount=${accessToken}`);
                 await Swal.fire(
                     'Deleted!',
                     'Your file has been deleted.',

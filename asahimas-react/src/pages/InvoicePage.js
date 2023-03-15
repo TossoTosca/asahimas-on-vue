@@ -3,6 +3,7 @@ import RealTimeDate from '../components/RealTimeDate';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Button } from 'react-bootstrap';
+import { apiUrl } from '../components/ApiUrl';
 
 function InvoicePage() {
     function IdrFormater({ amount }) {
@@ -18,7 +19,7 @@ function InvoicePage() {
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
-        const endpoint = `http://localhost:3004/myProduct?hereForYou=${accessToken}`;
+        const endpoint = `${apiUrl}/myProduct?hereForYou=${accessToken}`;
 
         async function fetchData() {
             try {
@@ -48,7 +49,7 @@ function InvoicePage() {
         }).then((result) => {
             if (result.isConfirmed) {
                 const accessToken = localStorage.getItem('accessToken');
-                axios.get(`http://localhost:3004/payment?accessToken=${accessToken}`)
+                axios.get(`${apiUrl}/payment?accessToken=${accessToken}`)
                     .then((response) => {
                         // Do something with the invoice data
                         let getMoney = Number(response.data.money)

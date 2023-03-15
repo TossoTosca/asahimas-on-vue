@@ -1,6 +1,7 @@
 import React from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { apiUrl } from './ApiUrl';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Card, Button } from 'react-bootstrap'
@@ -57,7 +58,7 @@ const CardComponent = ({ endpoint, product }) => {
                         if (window.location.pathname === '/history') {
                             const myProductId = product.id;
                             const productName = product.name;
-                            axios.get(`http://localhost:3004/sellProduct?accessToken=${accessToken}&myProductId=${myProductId}&quantity=${quantity}&productName=${productName}`)
+                            axios.get(`${apiUrl}/sellProduct?accessToken=${accessToken}&myProductId=${myProductId}&quantity=${quantity}&productName=${productName}`)
                                 .then((response) => {
                                     setTimeout(() => {
                                         window.location.reload();
@@ -65,7 +66,7 @@ const CardComponent = ({ endpoint, product }) => {
                                 })
                                 .catch(error => console.error(error));
                         } else if (window.location.pathname === '/product') {
-                            axios.get(`http://localhost:3004/buyProduct?accessToken=${accessToken}&productId=${product.id}&quantity=${quantity}`)
+                            axios.get(`${apiUrl}/buyProduct?accessToken=${accessToken}&productId=${product.id}&quantity=${quantity}`)
                                 .then((response) => {
                                     setTimeout(() => {
                                         window.location.reload();

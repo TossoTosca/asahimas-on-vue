@@ -2,18 +2,17 @@ import React, { useEffect, useState } from 'react';
 import CardComponent from '../components/CardComponent';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Scrollbar } from "swiper";
-import Swal from 'sweetalert2';
 
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 import "swiper/css/mousewheel";
 import "../App.css";
-import ErrorMessage from '../components/ErrorMessage';
+import { apiUrl } from '../components/ApiUrl';
 
 export default function MyProductPage() {
     const accessToken = localStorage.getItem('accessToken');
 
-    const endpoint = `http://localhost:3004/myProduct?hereForYou=${accessToken}`
+    const endpoint = `${apiUrl}/myProduct?hereForYou=${accessToken}`
     const [products, setProducts] = useState([]);
 
     useEffect(() => {

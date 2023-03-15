@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-
-const apiUrl = 'http://localhost:3004'
+import { apiUrl } from '../components/ApiUrl';
 
 export default function RegisterPage() {
 

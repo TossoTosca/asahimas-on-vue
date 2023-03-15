@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import AddProductForm from '../components/AddProductForm';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { apiUrl } from '../components/ApiUrl';
 
 function AddProductPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +13,7 @@ function AddProductPage() {
             setIsLoading(true);
             // lakukan permintaan API ke backend dengan formData
             const accessToken = localStorage.getItem('accessToken')
-            const url = `http://localhost:3004/products?accessToken=${accessToken}`
+            const url = `${apiUrl}/products?accessToken=${accessToken}`
 
             const response = await axios.post(url, formData);
 
