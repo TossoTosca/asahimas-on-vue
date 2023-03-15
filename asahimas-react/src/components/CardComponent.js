@@ -20,7 +20,8 @@ const CardComponent = ({ endpoint, product }) => {
         Swal.fire({
             title: product.name,
             imageUrl: product.imgUrl,
-            text: `Beli seharga ${IdrFormater({ amount: product.price })}`,
+            text: `${window.location.pathname === '/product' ? 'Beli' : 'Jual'} seharga ${IdrFormater({ amount: product.price })}`
+            ,
             icon: 'info',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

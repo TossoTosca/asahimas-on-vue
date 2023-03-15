@@ -15,7 +15,6 @@ function AddProductPage() {
             const url = `http://localhost:3004/products?accessToken=${accessToken}`
 
             const response = await axios.post(url, formData);
-            console.log(formData, accessToken);
 
             Swal.fire({
                 icon: 'success',
